@@ -50,7 +50,7 @@ struct AhoCorasick {
         }
         return res;
     }
-    vector<vi> findAll(vector<string>& pat, string word) {
+    vector<vi> findAll(vector<string>& pat, string word) { //Encuentra todos los matches(da los index de los patterns que se encuentra)
         vi r = find(word);
         vector<vi> res(sz(word));
         rep(i,0,sz(word)) {
