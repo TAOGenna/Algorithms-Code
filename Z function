@@ -1,0 +1,22 @@
+struct ZFunction{
+public:
+	int z[1e5];
+	void buid(string &s){
+		int L = 0, R = 0,n=sz(s);
+		for (int i = 1; i < n; i++) {
+		  if (i > R) {
+		    L = R = i;
+		    while (R < n && s[R-L] == s[R]) R++;
+		    z[i] = R-L; R--;
+		  } else {
+		    int k = i-L;
+		    if (z[k] < R-i+1) z[i] = z[k];
+		    else {
+		      L = i;
+		      while (R < n && s[R-L] == s[R]) R++;
+		      z[i] = R-L; R--;
+		    }
+		  }
+		}
+	}
+};
