@@ -1,65 +1,62 @@
-struct AhoCorasick {
-    enum {alpha = 26, first = 'a'};
-    struct Node {
-        // (nmatches is optional )
-        int back, next[alpha], start = -1, end = -1, nmatches = 0;
-        Node(int v) { memset(next, v, sizeof(next)); }
-    };
-    vector<Node> N;
-    vector<int> backp;
-    void insert(string& s, int j){
-        assert(!s.empty());
-        int n = 0;
-        trav(c, s) {
-            int& m = N[n].next[c - first];
-            if (m == -1) { n = m = sz(N); N.emplace_back(-1); }
-            else n = m;
-        }
-        if (N[n].end == -1) N[n].start = j;
-        backp.push_back(N[n].end);
-        N[n].end = j;
-        N[n].nmatches++;
-    }
-    AhoCorasick(vector<string>& pat) {
-        N.emplace_back(-1);
-        rep(i,0,sz(pat)) insert(pat[i], i);
-        N[0].back = sz(N);
-        N.emplace_back(0);
-        queue<int> q;
-        for (q.push(0); !q.empty(); q.pop()) {
-            int n = q.front(), prev = N[n].back;
-            rep(i,0,alpha) {
-                int &ed = N[n].next[i], y = N[prev].next[i];
-                if (ed == -1) ed = y;
-                else {
-                    N[ed].back = y;
-                    (N[ed].end == -1 ? N[ed].end : backp[N[ed].start])= N[y].end;
-                    N[ed].nmatches += N[y].nmatches;
-                    q.push(ed);
-                }
-            }
-        }
-    }
-    vi find(string word) {
-        int n = 0;
-        vi res; // l l count = 0;
-        trav(c, word) {
-            n = N[n].next[c - first];
-            res.push_back(N[n].end);
-            // count += N[n] .nmatches;
-        }
-        return res;
-    }
-    vector<vi> findAll(vector<string>& pat, string word) { //Encuentra todos los matches(da los index de los patterns que se encuentra)
-        vi r = find(word);
-        vector<vi> res(sz(word));
-        rep(i,0,sz(word)) {
-            int ind = r[i];
-            while (ind != -1) {
-                res[i - sz(pat[ind]) + 1].push_back(ind);
-                ind = backp[ind];
-            }
-        }
-        return res;
-    }
-};
+
+const int N=1e5+10,M=30;
+int g[N][M],f[N],a='a';
+int nodes=0;
+bool pattern[N];
+int out[N];
+map<int,int> inde;
+
+void inst(string s,int ind){
+	int node=0;
+	for(auto x : s){
+		int loc=x-a;
+		if(g[node][loc]!=-1) node=g[node][loc];
+		else node=g[node][loc]=++nodes;
+	}
+	pattern[node]=true;
+	inde[node]=ind;
+}
+
+void build(void){
+	queue<int> q;
+	rep(i,0,M) if(g[0][i]){ q.push(g[0][i]); f[i]=0; };
+	while(!q.empty()){
+		auto r=q.front();q.pop();
+		rep(i,0,M){
+			if(g[r][i]==-1) continue;
+			auto u=g[r][i];
+			q.push(u);
+			auto v=f[r];
+			while(g[v][i]==-1) v=f[v];
+			f[u]=g[v][i];
+			// out(u):=out(u) U out(f(u))
+			// current node = u ---- suffix link node = f[u]
+			if(pattern[f[u]]) out[u]=f[u];
+			else out[u]=out[f[u]];
+		}
+	}
+}
+
+int main(){
+    .
+    .
+    .
+    int q=0;
+	rep(i,0,sz(tx)){
+		while(g[q][tx[i]-a]==-1){
+			q=f[q];
+		}
+		q=g[q][tx[i]-a];
+		int aux=q;
+		if(out[aux] or pattern[aux]){
+			if(pattern[aux]) cout<<pat[inde[aux]]<<endl;
+			while(out[aux]){
+				cout<<pat[inde[out[aux]]]<<endl;
+				aux=out[aux];
+			}
+		}
+	}
+    .
+    .
+    .
+}
