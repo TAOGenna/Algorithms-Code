@@ -6,24 +6,15 @@ vector<int> order, component; // order->toposort   componenet->temporal list of 
 
 void dfs1 (int v) {
     used[v] = true;
-    for(auto x : g[v]){
-      	if(!used[x]){
-      		dfs1(x);
-       	}
-    }
+    for(auto x : g[v]) if(!used[x]) dfs1(x);
     order.pb(v);
 }
 
 void dfs2 (int v) {
     used[v] = true;
     component.push_back (v);
-    for(auto x : gr[v]){
-      	if(!used[x]){
-      		dfs2(x);
-      	}
-    }
+    for(auto x : gr[v]) if(!used[x]) dfs2(x);
 }
-
 int main() {
     int n,m; cin>>n>>m; // n->#nodes  m->#edges
     rep(i,0,m) {
