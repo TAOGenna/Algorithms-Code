@@ -1,45 +1,8 @@
-#pragma GCC optimize ("Ofast")
-#pragma GCC target ("avx,avx2")
-//#pragma GCC optimize ("trapv")
- 
-#include <bits/stdc++.h>
-using namespace std;
- 
-#define fastio ios_base::sync_with_stdio(0); cin.tie(0); cin.exceptions(cin.failbit);
-//#define rep(i, begin, end) for (__typeof(end) i = (begin) - ((begin) > (end)); i != (end) - ((begin) > (end)); i += 1 - 2 * ((begin) > (end)))
-#define rep(i, a, b) for(int i = a; i < (b); ++i)
-#define trav(a, x) for(auto& a : x)
-#define ff first
-#define ss second
-#define mp make_pair
-#define pb push_back
-#define all(x) (x).begin(), (x).end()
-#define sz(x) (x).size()
-#define what_is(x) cerr << #x << " is " << x << endl;
-#define wis cout<<endl<<"I already speak english, bitch"<<endl<<endl;
- 
-typedef long long int lli;
-typedef vector<lli> vi;
-typedef pair<lli,lli> ii;
-typedef vector<ii> vii;
-typedef pair<ii,lli> iii;
-typedef long double C;
- 
-#define jael(args...) { string  _s =#args; replace(_s.begin(), _s.end(), ',',' '); stringstream _ss(_s); istream_iterator<string> _it(_ss); err(_it, args);}
-void err(istream_iterator<string> it){}
-template<typename T, typename... Args>
-void err(istream_iterator<string> it, T a, Args... args){
-    cout <<  *it  << " : " << a << endl;
-    err(++it, args...);
-}
 
-const int N=1000;
-
-//int tree[2*N];
 int n,h;
 
 /////////////////// query normalito de updates y queries de abajo hacia arriba ////////////
-/*
+
 //ejemplo de segment tree
 //query de maximo en un rango
 //update de un elemento
@@ -62,11 +25,11 @@ void update(int x,int k){
 		tree[k]=max(tree[k<<1],tree[k<<1|1]);
 	}
 }
-*/
+
 ////////////////////////////////////////////////////////////////////////////////////
 
 /////////////////////////	query hecha de arriba hacia abajo		//////////////////////////////////////////////////
-/*
+
 int query(int a,int b,int nodo=1,int l=1,int r=n){
 	if(l>=a and  r<=b) return tree[nodo];
 	else if(l>b or r<a) return 0;
@@ -82,7 +45,7 @@ void update(int x,int k){
 	}
 }
 
-*/
+
 
 ///////////////////////////////// ejemplito clasico de Lazy Progagation	////////////////////////////////////////////////////
 // update :  incrementar cada elemento entre [a,b] por x
@@ -141,6 +104,7 @@ int query(int a,int b){
 	push(b);
 	return go_query(a,b);
 }
+////////////////////////////////////////////////////////////////////////////////////////////
 
 int main(){
 
