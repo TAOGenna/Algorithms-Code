@@ -1,63 +1,61 @@
-struct CD {  // or typedef complex<double> CD; (but 4x slower)
-  double r,i;
-  CD(double r = 0, double i = 0) : r(r), i(i){}
-  double real() const{ return r; }
-  void operator /= (const int c){ r/=c; i/=c; }
-};
+// tourist
+const int md = 924844033;
+const int gen = 5;
 
-CD operator*(const CD& a, const CD& b){ 
-  return CD( a.r * b.r - a.i * b.i, a.r * b.i + a.i * b.r);
+int pw(int a, int b) {
+  int x = 1, step = 1 << 30;
+  while (step > 0) {
+    x = (long long)x * x % md;
+    if (step & b) x = (long long)x * a % md;
+    step >>= 1;
+  }
+  return x;
 }
-CD operator+(const CD& a, const CD& b){
-  return CD(a.r + b.r, a.i + b.i);
-}
-CD operator-(const CD& a, const CD& b){
-  return CD(a.r - b.r, a.i - b.i);
-}
-const int MAXN=1000;
-const double pi = acos(-1.0); // FFT
-CD cp1[MAXN+9],cp2[MAXN+9];  // MAXN must be power of 2 !!
-int R[MAXN+9];
-//CD root(int n, bool inv){ // NTT
-//  ll r = pm(RT,(MOD-1)/n); // pm: modular exponentiation
-//  return CD(inv ? pm(r,MOD-2) : r);
-//}
-void dft(CD* a, int n, bool inv){
-  rep(i,0,n) if(R[i] < i) swap(a[R[i]],a[i]);
-  for(int m = 2; m <= n; m *= 2){
-    double z = 2*pi/m*(inv?-1:1); // FFT
-    CD wi = CD(cos(z),sin(z)); // FFT
-    // CD wi=root(m,inv); // NTT
-    for(int j = 0; j < n;j += m){
-      CD w(1);
-      for(int k = j,k2 = j+m/2; k2 < j+m; k++, k2++){
-        CD u = a[k];
-        CD v = a[k2]*w;
-        a[k] = u+v;
-        a[k2] = u-v;
-        w = w*wi;
+
+void fft(vector <int> &a) {
+  int n = a.size();
+  for (int i = 0; i < n; i++) {
+    int j = 0;
+    int x = i, y = n - 1;
+    while (y > 0) {
+      j = (j << 1) + (x & 1);
+      x >>= 1;
+      y >>= 1;
+    }
+    if (i < j) swap(a[i], a[j]);
+  }
+  for (int len = 1; len < n; len *= 2) {
+    int root = pw(gen, (md - 1) / (2 * len));
+    for (int i = 0; i < n; i += 2 * len) {
+      int w = 1;
+      for (int j = 0; j < len; j++) {
+        int u = a[i + j];
+        int v = (long long)a[i + j + len] * w % md;
+        a[i + j] = u + v;
+        if (a[i + j] >= md) a[i + j] -= md;
+        a[i + j + len] = u - v;
+        if (a[i + j + len] < 0) a[i + j + len] += md;
+        w = (long long)w * root % md;
       }
     }
   }
-  if(inv) rep(i,0,n) a[i]/=n; // FFT
-  //if(inv){ // NTT
-  //  CD z(pm(n,MOD-2)); // pm: modular exponentiation
-  //  rep(i,0,n) a[i] = a[i]*z;
-  //}
 }
-vector<int> multiply(vector<int>& p1, vector<int>& p2){
-  int n = sz(p1) + sz(p2) +1;
-  int m = 1, cnt = 0;
-  while(m <= n) m += m, cnt++;
-  rep(i,0,m){ R[i] = 0; rep(j,0,cnt) R[i] = (R[i]<<1) | ((i>>j)&1); }
-  rep(i,0,m) cp1[i] = 0, cp2[i] = 0;
-  rep(i,0,sz(p1)) cp1[i] = p1[i];
-  rep(i,0,sz(p2)) cp2[i] = p2[i];
-  dft(cp1,m,false); dft(cp2,m,false);
-  rep(i,0,m) cp1[i] = cp1[i] * cp2[i];
-  dft(cp1,m,true);
-  vector<int> res;
-  n -= 2;
-  rep(i,0,n) res.pb((lli)floor(cp1[i].real()+0.5)); // change for NTT
-  return res;
+ 
+vector <int> multiply(vector <int> a, vector <int> b) {
+  int an = a.size();
+  int bn = b.size();
+  int need = an + bn - 1;
+  int nn = 1;
+  while (nn < 2 * an || nn < 2 * bn) nn <<= 1;
+  a.resize(nn);
+  b.resize(nn);
+  fft(a);
+  fft(b);
+  for (int i = 0; i < nn; i++) a[i] = (long long)a[i] * b[i] % md;
+  reverse(++a.begin(), a.end());
+  fft(a);
+  int inv = pw(nn, md - 2);
+  for (int i = 0; i < nn; i++) a[i] = (long long)a[i] * inv % md;
+  a.resize(need);
+  return a;
 }
